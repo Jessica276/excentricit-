@@ -27,7 +27,7 @@ class Excentricite{
         void profil();
         void displayGraph();
         Matrix get_matrix();
-        int min_path(int noeud);
+        int min_path(int noeud,int dest);
 };
 
 Excentricite::Excentricite(){
@@ -129,26 +129,44 @@ void Excentricite::displayGraph(){
 //     return e;
 // }
 
-int Excentricite::min_path(int noeud){
-    deque<int>f;
-    set<int>S;
-    f.push_back(noeud);
+int Excentricite::min_path(int noeud,int dest){
+    deque<map<int,vector<int>>>file;
+    set<int> visited;
+    map<int,vector<int>> t;
+    t[noeud].push_back(noeud);
+    file.push_back(t);
     //Visiter le noeud
-    S.insert(noeud);
+    visited.insert(noeud);
     vector<int>N;
 
-    while(!f.empty()){
-        int s = f.at(0);    //Accéder au premier élément
-        f.pop_front();      //Effacer le premier élément
-        vector<int>neighbors=this->graph[s];
-        for(int neighbor:neighbors){
-            if(S.insert(neighbor).second){
-                f.push_back(neighbor);
-                S.insert(neighbor);
+    while(!file.empty()){
+        map<int,vector<int>> queue = file.front();    //Accéder au premier élément
+        file.pop_front();
+        vector<int>path;
+        int noeud = 0;
+        for(auto s:queue){
+            noeud = s.first;
+            path = s.second;
+        }
+        
+        if(noeud==dest){
+            return path.size()-1;
+        }
+        vector<int>neighbors = this->graph[noeud];
+
+        for(auto neighbor:neighbors){
+            if(visited.insert(neighbor).second){
+                map<int,vector<int>> next;
+                next[neighbor].push_back(neighbor);
+                for(auto pt:path){
+                    next[neighbor].push_back(pt);
+                }
+                file.push_back(next);
             }
-            N.push_back(neighbor);
         }
     }
+
+    return 0;
 }
 
 
@@ -160,9 +178,11 @@ int main(){
     a.profil();
     a.displayGraph();
     
-    // for(int i=1;i<=a.graph.size();i++){
-    //     cout <<"Excentricite de "<< i << " vaut "<< a.min_path(i) << endl;
-    // }
-     cout <<"\nExcentricite vaut \n"<< a.min_path(4) << endl;
+    for(int i=1;i<=a.graph.size();i++){
+        //cout <<"Excentricite de "<< i << " vaut "<< a.min_path(i) << endl;
+        cout <<"\nDistance entre \n"<<"2  et "<< i << " : "<< a.min_path(2,i) << endl;
+    }
+    
+
     return(0);
 }
