@@ -5,10 +5,12 @@
 #include<map>
 #include<set>
 #include<deque>
+#include<typeinfo>
 
 using namespace std;
 
 typedef vector<float> Vector;
+typedef vector<int>Vector_int;
 typedef vector<Vector> Matrix;
 
 class Excentricite{
@@ -27,7 +29,9 @@ class Excentricite{
         void profil();
         void displayGraph();
         Matrix get_matrix();
+        int set_maxL(int noeud);
         int min_path(int noeud,int dest);
+        int research_max(Vector_int list);
 };
 
 Excentricite::Excentricite(){
@@ -40,6 +44,10 @@ Excentricite::~Excentricite(){
 
 Matrix Excentricite::get_matrix(){
     return this->A;
+}
+
+int Excentricite::set_maxL(int sommet) {
+    this->max_lengh = sommet;
 }
 
 void Excentricite::displayMatrix(Matrix M){
@@ -100,35 +108,6 @@ void Excentricite::displayGraph(){
     }
 }
 
-// int Excentricite::min_path(int noeud){
-//     int e=0,i=0;
-//     deque<int>f;
-//     set<int>S;
-//     f.push_back(noeud);
-//     //Visiter le noeud
-//     S.insert(noeud);
-//     vector<int>N;
-//     N.push_back(noeud);
-
-//     while(!f.empty()){
-//         int s = f.at(0);    //Accéder au premier élément
-//         f.pop_front();      //Effacer le premier élément
-//         vector<int>neighbors=this->graph[s];
-//         if(S.size()==this->graph.size()){
-//             break;
-//         }
-
-//         for(int neighbor:neighbors){
-//             if(S.insert(neighbor).second){
-//                 f.push_back(neighbor);
-//                 S.insert(neighbor);
-//             }
-//             N.push_back(neighbor);
-//         }
-//     }
-//     return e;
-// }
-
 int Excentricite::min_path(int noeud,int dest){
     deque<map<int,vector<int>>>file;
     set<int> visited;
@@ -169,7 +148,19 @@ int Excentricite::min_path(int noeud,int dest){
     return 0;
 }
 
+int Excentricite::research_max(Vector_int list){
+    int max = list[0];
+    int temp;
 
+    for(int i=1; i<list.size();i++) {
+        temp = list[i];
+        if(temp>max) {
+            max = temp; 
+        }
+    }
+
+    return max;
+}
 
 
 int main(){
@@ -177,11 +168,31 @@ int main(){
     a.displayMatrix(a.get_matrix());
     a.profil();
     a.displayGraph();
-    
+    cout<<endl;
+    int sommet;
+
+    cout <<"Entrer le sommet : ";
+    cin >> sommet;
+    // cout<<sommet;
+    a.set_maxL(sommet);
+
+    Vector_int list;
+    int max;
+
     for(int i=1;i<=a.graph.size();i++){
-        //cout <<"Excentricite de "<< i << " vaut "<< a.min_path(i) << endl;
-        cout <<"\nDistance entre \n"<<"2  et "<< i << " : "<< a.min_path(2,i) << endl;
+        cout<<"\nLa distance entre "<<sommet<<"  et "<< i << " : "<< a.min_path(sommet,i);
+        //cout<<typeid(a.min_path(sommet,i)).name();
+        list.push_back(a.min_path(sommet,i));
     }
+
+    cout<<endl;
+    cout<<"\nLa liste des distances obtenue est : [";
+    for(auto l:list){
+        cout<<l<<" ";
+        max = a.research_max(list);
+    }
+    cout<<"]"<<endl;
+    cout<<"\nL excentricite du sommet "<<sommet<<" est "<<max<<endl;
     
 
     return(0);
