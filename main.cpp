@@ -29,7 +29,7 @@ class Excentricite{
         void profil();
         void displayGraph();
         Matrix get_matrix();
-        int set_maxL(int noeud);
+        void set_maxL(int noeud);
         int min_path(int noeud,int dest);
         int research_max(Vector_int list);
 };
@@ -46,7 +46,7 @@ Matrix Excentricite::get_matrix(){
     return this->A;
 }
 
-int Excentricite::set_maxL(int sommet) {
+void Excentricite::set_maxL(int sommet) {
     this->max_lengh = sommet;
 }
 
@@ -61,7 +61,7 @@ void Excentricite::displayMatrix(Matrix M){
 }
 
 void Excentricite::initializeData(){
-    ifstream file("data.txt");      //Ouvre le fichier data.txt
+    ifstream file("data1.txt");      //Ouvre le fichier data.txt
 
     if(file){
         file>>this->n;
@@ -152,7 +152,7 @@ int Excentricite::research_max(Vector_int list){
     int max = list[0];
     int temp;
 
-    for(int i=1; i<list.size();i++) {
+    for(int i=1; i<int(list.size());i++) {
         temp = list[i];
         if(temp>max) {
             max = temp; 
@@ -169,30 +169,35 @@ int main(){
     a.profil();
     a.displayGraph();
     cout<<endl;
-    int sommet;
 
-    cout <<"Entrer le sommet : ";
-    cin >> sommet;
+    // cout <<"Entrer le sommet : ";
+    // cin >> sommet;
     // cout<<sommet;
-    a.set_maxL(sommet);
+    // a.set_maxL(sommet);
 
-    Vector_int list;
-    int max;
+    
 
-    for(int i=1;i<=a.graph.size();i++){
-        cout<<"\nLa distance entre "<<sommet<<"  et "<< i << " : "<< a.min_path(sommet,i);
-        //cout<<typeid(a.min_path(sommet,i)).name();
-        list.push_back(a.min_path(sommet,i));
+    for(int sommet=1;sommet<=int(a.get_matrix().size());sommet++){
+        Vector_int list;
+        int max;
+
+        cout<<"\nNoeud "<<sommet<<endl;
+        for(int i=1;i<=int(a.graph.size());i++){
+            cout<<"\nLa distance entre "<<sommet<<"  et "<< i << " : "<< a.min_path(sommet,i);
+            //cout<<typeid(a.min_path(sommet,i)).name();
+            list.push_back(a.min_path(sommet,i));
+        }
+
+        cout<<endl;
+        cout<<"\nLa liste des distances obtenue est : [";
+        for(auto l:list){
+            cout<<l<<" ";
+            max = a.research_max(list);
+        }
+        cout<<"]"<<endl;
+        cout<<"\nL excentricite du sommet "<<sommet<<" est "<<max<<endl;
+        cout<<"------------------------------";
     }
-
-    cout<<endl;
-    cout<<"\nLa liste des distances obtenue est : [";
-    for(auto l:list){
-        cout<<l<<" ";
-        max = a.research_max(list);
-    }
-    cout<<"]"<<endl;
-    cout<<"\nL excentricite du sommet "<<sommet<<" est "<<max<<endl;
     
 
     return(0);
