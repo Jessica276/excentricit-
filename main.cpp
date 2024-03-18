@@ -32,6 +32,8 @@ class Excentricite{
         void set_maxL(int noeud);
         int min_path(int noeud,int dest);
         int research_max(Vector_int list);
+        void generateDOT(Matrix adjMat,const string& dotfilename);
+        void renderGraph(const string& dotFilename,const string& outputFilename);
 };
 
 Excentricite::Excentricite(){
@@ -162,6 +164,37 @@ int Excentricite::research_max(Vector_int list){
     return max;
 }
 
+void Excentricite::generateDOT(Matrix adjacencyMatrix,const string& dotfilename){
+    ofstream dotFile(dotfilename);
+    if(!dotFile){
+        cerr<<"Error opening file :"<<dotfilename<<endl;
+        return;
+    }
+
+    dotFile << "graph G {\n";
+    const int n = adjacencyMatrix.size();
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            if (adjacencyMatrix[i][j] != 0) {
+                dotFile << i << " -- " << j << " [label=\"" << adjacencyMatrix[i][j] << "\"];\n";
+            }
+        }
+    }
+    dotFile << "}\n";
+
+    dotFile.close();
+
+}
+
+//Fonction qui rend le fichier dot en image
+void Excentricite::renderGraph(const string& dotFilename,const string& outputFilename){
+    string command = "dot -Tpng " + dotFilename + " -o " + outputFilename;
+    int result = system(command.c_str());
+    if(result != 0){
+        cerr<<"\nError rendering graph"<<endl;
+    }
+}
+
 
 int main(){
     Excentricite a;
@@ -176,7 +209,6 @@ int main(){
     // a.set_maxL(sommet);
 
     
-
     for(int sommet=1;sommet<=int(a.get_matrix().size());sommet++){
         Vector_int list;
         int max;
@@ -198,7 +230,10 @@ int main(){
         cout<<"\nL excentricite du sommet "<<sommet<<" est "<<max<<endl;
         cout<<"------------------------------";
     }
+    cout<<endl;
     
+    a.generateDOT(a.get_matrix(),"test.dot");
+    a.renderGraph("test.dot","output.png");
 
     return(0);
 }
